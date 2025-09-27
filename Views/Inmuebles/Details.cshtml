@@ -1,32 +1,94 @@
-@model PortalInmobiliario.Models.Inmueble
+@model PortalInmobiliario.ViewModels.InmuebleDetailViewModel
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
 
 @{
-    ViewData["Title"] = Model.Titulo;
+    ViewData["Title"] = Model.Inmueble.Titulo;
+}
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
 }
 
-<h1>@Model.Titulo</h1>
+<h1>@Model.Inmueble.Titulo</h1>
 <hr />
 
 <div class="row">
     <div class="col-md-8">
-        <img src="@(Model.Imagen ?? "/images/default.jpg")" class="img-fluid rounded" alt="@Model.Titulo">
+        <img src="@(Model.Inmueble.Imagen ?? "/images/default.jpg")" class="img-fluid rounded mb-3" alt="@Model.Inmueble.Titulo">
+
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <div class="card">
+                <div class="card-header">
+                    <h4>Agendar una Visita</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="AgendarVisita" method="post">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="All" class="text-danger"></div>
+                        <input type="hidden" asp-for="NuevaVisita.InmuebleId" />
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="NuevaVisita.FechaInicio" class="form-label"></label>
+                                <input asp-for="NuevaVisita.FechaInicio" type="datetime-local" class="form-control" />
+                                <span asp-validation-for="NuevaVisita.FechaInicio" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="NuevaVisita.FechaFin" class="form-label"></label>
+                                <input asp-for="NuevaVisita.FechaFin" type="datetime-local" class="form-control" />
+                                <span asp-validation-for="NuevaVisita.FechaFin" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="NuevaVisita.Notas" class="form-label"></label>
+                            <textarea asp-for="NuevaVisita.Notas" class="form-control" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Solicitar Visita</button>
+                    </form>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Context.Request.Path">Inicia sesión</a> para poder agendar una visita o reservar este inmueble.
+            </div>
+        }
     </div>
+    
     <div class="col-md-4">
         <div class="card">
             <div class="card-body">
-                <h3 class="card-title text-primary">@Model.Precio.ToString("C2")</h3>
-                <p class="card-text">
-                    <i class="fas fa-map-marker-alt"></i> @Model.Direccion, @Model.Ciudad
-                </p>
+                <h3 class="card-title text-primary">@Model.Inmueble.Precio.ToString("C0")</h3>
+                <p class="card-text">@Model.Inmueble.Direccion, @Model.Inmueble.Ciudad</p>
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><strong>Tipo:</strong> @Model.Tipo</li>
-                    <li class="list-group-item"><strong>Superficie:</strong> @Model.MetrosCuadrados m²</li>
-                    <li class="list-group-item"><strong>Dormitorios:</strong> @Model.Dormitorios</li>
-                    <li class="list-group-item"><strong>Baños:</strong> @Model.Banos</li>
+                    <li class="list-group-item"><strong>Tipo:</strong> @Model.Inmueble.Tipo</li>
+                    <li class="list-group-item"><strong>Superficie:</strong> @Model.Inmueble.MetrosCuadrados m²</li>
+                    <li class="list-group-item"><strong>Dormitorios:</strong> @Model.Inmueble.Dormitorios</li>
+                    <li class="list-group-item"><strong>Baños:</strong> @Model.Inmueble.Banos</li>
                 </ul>
                 <div class="d-grid gap-2 mt-3">
-                    <a href="#" class="btn btn-success btn-lg">Agendar Visita</a>
-                    <a href="#" class="btn btn-warning btn-lg">Reservar Ahora</a>
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        @if (Model.PuedeReservar)
+                        {
+                            <form asp-action="Reservar" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="inmuebleId" value="@Model.Inmueble.Id" />
+                                <button type="submit" class="btn btn-warning btn-lg w-100">Reservar Ahora (48h)</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <button class="btn btn-secondary btn-lg w-100" disabled>Actualmente Reservado</button>
+                        }
+                    }
                 </div>
             </div>
         </div>

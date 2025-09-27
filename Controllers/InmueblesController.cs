@@ -70,6 +70,7 @@ namespace PortalInmobiliario.Controllers
             const int tamanoPagina = 6;
             var totalInmuebles = await inmueblesQuery.CountAsync();
             var inmueblesPaginados = await inmueblesQuery
+                .OrderBy(i => i.Id)
                 .Skip((pagina - 1) * tamanoPagina)
                 .Take(tamanoPagina)
                 .ToListAsync();
@@ -120,7 +121,7 @@ namespace PortalInmobiliario.Controllers
             return View(viewModel);
         }
 
-        [HttpPost]
+        [HttpPost("AgendarVisita")]
         [ValidateAntiForgeryToken]
         [Authorize]
         public async Task<IActionResult> AgendarVisita(AgendarVisitaViewModel model)
@@ -171,6 +172,10 @@ namespace PortalInmobiliario.Controllers
 
             TempData["ErrorMessage"] = "No se pudo agendar la visita. Por favor, corrija los errores.";
             var inmueble = await _context.Inmuebles.FindAsync(model.InmuebleId);
+            if (inmueble == null)
+            {
+                return NotFound(); 
+            }
             var reservaActiva = await _context.Reservas.AnyAsync(r => r.InmuebleId == model.InmuebleId && r.FechaExpiracion > DateTime.UtcNow);
 
             var viewModel = new InmuebleDetailViewModel
@@ -182,7 +187,7 @@ namespace PortalInmobiliario.Controllers
 
             return View("Details", viewModel);
         }
-        [HttpPost]
+        [HttpPost("Reservar")]
         [ValidateAntiForgeryToken]
         [Authorize]
         public async Task<IActionResult> Reservar(int inmuebleId)
