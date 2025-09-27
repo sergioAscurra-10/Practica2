@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -37,6 +38,12 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
+            @if (Context.Session.GetString("LastVisitedPropertyId") != null)
+            {
+                <div class="alert alert-info" role="alert">
+                    ¿Volver a <a asp-controller="Inmuebles" asp-action="Details" asp-route-id="@Context.Session.GetString("LastVisitedPropertyId")">@Context.Session.GetString("LastVisitedPropertyTitle")</a>?
+                </div>
+            }
             @RenderBody()
         </main>
     </div>
