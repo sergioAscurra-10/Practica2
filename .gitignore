@@ -1,7 +1,10 @@
-# Directorios de compilación
+# Archivos generados
 bin/
 obj/
 
+# Archivos de la base de datos
+*.db
+*.sqlite
 # Archivos de la solución
 *.suo
 .vs/
