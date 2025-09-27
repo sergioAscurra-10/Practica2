@@ -1,0 +1,23 @@
+# Directorios de compilación
+bin/
+obj/
+
+# Archivos de la solución
+*.suo
+.vs/
+
+# Paquetes NuGet
+# No es necesario en proyectos modernos que usan PackageReference
+# Si usas packages.config, descomenta la siguiente línea
+# packages/
+
+# Archivos de configuración y secretos
+appsettings.Production.json
+appsettings.Staging.json
+appsettings.Development.json
+appsettings.json # si es muy sensible
+secrets.json
+
+# Otros archivos generados
+.DS_Store # Archivos de macOS
+Thumbs.db # Archivos de Windows
