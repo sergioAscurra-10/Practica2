@@ -1,0 +1,34 @@
+@model PortalInmobiliario.Models.Inmueble
+
+@{
+    ViewData["Title"] = Model.Titulo;
+}
+
+<h1>@Model.Titulo</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-8">
+        <img src="@(Model.Imagen ?? "/images/default.jpg")" class="img-fluid rounded" alt="@Model.Titulo">
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title text-primary">@Model.Precio.ToString("C2")</h3>
+                <p class="card-text">
+                    <i class="fas fa-map-marker-alt"></i> @Model.Direccion, @Model.Ciudad
+                </p>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><strong>Tipo:</strong> @Model.Tipo</li>
+                    <li class="list-group-item"><strong>Superficie:</strong> @Model.MetrosCuadrados m²</li>
+                    <li class="list-group-item"><strong>Dormitorios:</strong> @Model.Dormitorios</li>
+                    <li class="list-group-item"><strong>Baños:</strong> @Model.Banos</li>
+                </ul>
+                <div class="d-grid gap-2 mt-3">
+                    <a href="#" class="btn btn-success btn-lg">Agendar Visita</a>
+                    <a href="#" class="btn btn-warning btn-lg">Reservar Ahora</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
